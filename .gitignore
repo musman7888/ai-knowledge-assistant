@@ -1,0 +1,36 @@
+# ============================================================
+# .gitignore — what Git should NOT track
+# Keeps secrets, generated files, and local working docs out of the repo
+# ============================================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# --- Virtual environments ---
+venv/
+.venv/
+env/
+
+# --- Secrets / environment ---
+# Never commit real keys; .env.example is the safe template that IS committed
+.env
+*.env
+!.env.example
+
+# --- Generated data / local stores ---
+chroma_data/          # ChromaDB vector store (rebuilt from PDFs)
+*.sqlite3
+uploads/              # user-uploaded PDFs at runtime
+
+# --- Internal working docs (local only, like Project 1) ---
+CONSTITUTION.md
+TRACKER.md
+
+# --- OS / editor noise ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

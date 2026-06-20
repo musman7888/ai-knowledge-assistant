@@ -1,0 +1,29 @@
+# ============================================================
+# Python dependencies — AI Knowledge Assistant (backend)
+# Install:  pip install -r requirements.txt
+# Versions left loosely pinned for the skeleton; pin exactly after first install.
+# ============================================================
+
+# --- Web framework ---
+fastapi                 # REST API
+uvicorn[standard]       # ASGI server to run FastAPI
+python-multipart        # needed for file (PDF) uploads
+
+# --- Config & validation ---
+pydantic                # request/response models
+pydantic-settings       # load settings from environment / .env
+python-dotenv           # read .env during local development
+
+# --- LLM layer (provider-agnostic, same approach as Project 1) ---
+litellm                 # one interface for Gemini / OpenAI / Claude
+
+# --- RAG: embeddings + vector store ---
+sentence-transformers   # LOCAL embeddings (all-MiniLM-L6-v2), no API cost
+chromadb                # vector database for document/FAQ search
+
+# --- Document parsing (RAG ingestion) ---
+pypdf                   # extract text from uploaded PDFs
+
+# --- Database (Text-to-SQL) ---
+SQLAlchemy              # DB toolkit / safe query execution
+psycopg2-binary         # PostgreSQL driver

@@ -1,0 +1,4 @@
+-- ============================================================
+-- PostgreSQL schema for the Text-to-SQL module.
+-- Placeholder — tables (products, sales) defined in Phase 4.
+-- ============================================================
