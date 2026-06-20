@@ -1,1 +1,34 @@
-[]
+[
+  {
+    "question": "What is your return policy?",
+    "answer": "You can return any item within 30 days of purchase for a full refund, as long as you have the receipt."
+  },
+  {
+    "question": "What are your store hours?",
+    "answer": "Our store is open Monday to Saturday, 9:00 AM to 9:00 PM. We are closed on Sundays."
+  },
+  {
+    "question": "How do I reset my password?",
+    "answer": "Go to Settings, then Security, then click 'Reset Password' and follow the email instructions."
+  },
+  {
+    "question": "Do you offer free shipping?",
+    "answer": "Yes, we offer free standard shipping on all orders over $50. Orders below that have a flat $5 fee."
+  },
+  {
+    "question": "How can I track my order?",
+    "answer": "Once your order ships, you'll receive an email with a tracking link. You can also view it under 'My Orders'."
+  },
+  {
+    "question": "What payment methods do you accept?",
+    "answer": "We accept Visa, Mastercard, American Express, PayPal, and Apple Pay."
+  },
+  {
+    "question": "Do you have a warranty on electronics?",
+    "answer": "Yes, all electronics come with a 1-year manufacturer warranty covering defects."
+  },
+  {
+    "question": "How do I contact customer support?",
+    "answer": "You can reach our support team at support@example.com or call 1-800-123-4567 during store hours."
+  }
+]

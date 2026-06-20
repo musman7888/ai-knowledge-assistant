@@ -7,6 +7,7 @@
 from fastapi import FastAPI
 
 from app.config import settings
+from app.api import ask
 
 # Create the FastAPI application object.
 # title/version show up in the auto-generated docs at /docs.
@@ -15,6 +16,9 @@ app = FastAPI(
     description="Ask your documents and databases anything, in any language.",
     version="0.1.0",
 )
+
+# Mount the feature routers. /ask lives in app/api/ask.py.
+app.include_router(ask.router)
 
 
 @app.get("/")
