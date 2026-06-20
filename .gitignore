@@ -21,9 +21,13 @@ env/
 !.env.example
 
 # --- Generated data / local stores ---
-chroma_data/          # ChromaDB vector store (rebuilt from PDFs)
+# ChromaDB vector store (rebuilt from PDFs) — match at any depth
+chroma_data/
+**/chroma_data/
 *.sqlite3
-uploads/              # user-uploaded PDFs at runtime
+# user-uploaded PDFs at runtime
+uploads/
+**/uploads/
 
 # --- Internal working docs (local only, like Project 1) ---
 CONSTITUTION.md

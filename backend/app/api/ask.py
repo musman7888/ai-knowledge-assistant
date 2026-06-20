@@ -9,7 +9,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from app.services import faq_service
+from app.services import faq_service, rag_service
 
 router = APIRouter()
 
@@ -29,10 +29,19 @@ class AskResponse(BaseModel):
 
 @router.post("/ask", response_model=AskResponse)
 def ask(request: AskRequest) -> AskResponse:
-    """Answer a question. Currently FAQ-only."""
+    """
+    Answer a question. For now: try FAQ first (fast, high precision), then
+    fall back to RAG over uploaded documents. Phase 5 replaces this simple
+    precedence with the smart router (FAQ / DB / DOCUMENT classification).
+    """
+    # 1) FAQ — cheap and confident when it matches.
     result = faq_service.find_answer(request.question)
 
-    # No confident match -> honest fallback (per CONSTITUTION).
+    # 2) RAG — search uploaded documents if FAQ had no confident match.
+    if result is None:
+        result = rag_service.answer(request.question)
+
+    # 3) Nothing available (no FAQ match, no documents ingested).
     if result is None:
         return AskResponse(
             answer="I don't have information on that.",

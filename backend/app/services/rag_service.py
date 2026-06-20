@@ -9,7 +9,9 @@ import chromadb
 import pypdf
 
 from app.config import settings
+from app.prompts.system import RAG_SYSTEM_PROMPT
 from app.services.embeddings import embed
+from app.services.llm_service import complete
 
 # Persistent ChromaDB client: vectors are written to disk at CHROMA_DIR so
 # they survive restarts (unlike the in-memory FAQ approach). In K3s this
@@ -76,3 +78,48 @@ def ingest(doc_id: str, text: str) -> int:
 def count() -> int:
     """Total number of chunks currently stored (for testing/debugging)."""
     return _collection.count()
+
+
+# ============================================================
+# Retrieval + answer (Phase 3b) — the "R" and "G" of RAG
+# ============================================================
+
+def retrieve(question: str, k: int = 3) -> list[tuple[str, float]]:
+    """
+    Find the k chunks most similar to `question`.
+    Returns a list of (chunk_text, distance) pairs (smaller distance = closer).
+    """
+    if _collection.count() == 0:
+        return []
+
+    query_vec = embed([question])[0]
+    result = _collection.query(query_embeddings=[query_vec], n_results=k)
+    # Chroma returns parallel lists wrapped in an outer list (one per query).
+    docs = result["documents"][0]
+    distances = result["distances"][0]
+    return list(zip(docs, distances))
+
+
+def answer(question: str, k: int = 3) -> dict | None:
+    """
+    Answer a question from the ingested documents (RAG).
+
+    Retrieves the top-k chunks, then asks the LLM to answer using ONLY those
+    chunks. Returns {answer, source, chunks_used} or None if nothing has been
+    ingested yet. The grounded prompt makes the LLM itself say "I don't have
+    information on that" when the chunks don't contain the answer.
+    """
+    chunks = retrieve(question, k)
+    if not chunks:
+        return None  # no documents uploaded yet
+
+    # Join the retrieved chunks into one context block for the LLM.
+    context = "\n\n".join(doc for doc, _ in chunks)
+    prompt = f"Context:\n{context}\n\nQuestion: {question}"
+
+    reply = complete(prompt, system=RAG_SYSTEM_PROMPT)
+    return {
+        "answer": reply.strip(),
+        "source": "document",
+        "chunks_used": len(chunks),
+    }
