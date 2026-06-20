@@ -7,7 +7,7 @@
 from fastapi import FastAPI
 
 from app.config import settings
-from app.api import ask
+from app.api import ask, upload
 
 # Create the FastAPI application object.
 # title/version show up in the auto-generated docs at /docs.
@@ -17,8 +17,9 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Mount the feature routers. /ask lives in app/api/ask.py.
-app.include_router(ask.router)
+# Mount the feature routers.
+app.include_router(ask.router)        # /ask
+app.include_router(upload.router)     # /upload (PDF ingestion)
 
 
 @app.get("/")
