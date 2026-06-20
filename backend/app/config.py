@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     # --- LLM (via LiteLLM) ---
     llm_provider: str = "gemini"                 # gemini | openai | anthropic
     gemini_api_key: str = ""                     # filled from .env in real use
-    llm_model: str = "gemini/gemini-1.5-flash"   # LiteLLM model string
+    llm_model: str = "gemini/gemini-3.1-flash-lite-preview"   # same as Project 1
 
     # --- Embeddings ---
     embeddings_provider: str = "local"           # local | openai | gemini
