@@ -1,0 +1,11 @@
+id,name,category,price,stock,branch
+1,iPhone 15,Electronics,999.00,50,Downtown
+2,Samsung TV,Electronics,599.00,8,Downtown
+3,Milk,Groceries,3.50,0,Downtown
+4,Bread,Groceries,2.50,0,Uptown
+5,Coffee Beans,Groceries,12.00,300,Uptown
+6,Headphones,Electronics,199.00,15,Uptown
+7,Laptop Stand,Accessories,45.00,200,Downtown
+8,Water Bottle,Accessories,9.99,0,Uptown
+9,Desk Lamp,Accessories,29.99,120,Downtown
+10,Notebook,Stationery,4.99,500,Uptown
