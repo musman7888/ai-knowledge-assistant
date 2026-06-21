@@ -18,3 +18,27 @@ RAG_SYSTEM_PROMPT = (
     "3. Be concise and answer in the same language as the question.\n"
     "4. Do not mention the word 'context' in your answer."
 )
+
+
+# Text-to-SQL: generate a query from a question + schema.
+# The strict "output ONLY SQL" rule keeps the reply parseable, and the
+# read-only rule is reinforced by sql_service.run_query() as a hard guard.
+SQL_GEN_PROMPT = (
+    "You are a PostgreSQL expert. Given a database schema and a question, "
+    "write ONE read-only SQL SELECT query that answers it.\n"
+    "Rules:\n"
+    "1. Output ONLY the SQL query — no explanation, no markdown, no comments.\n"
+    "2. Use only the tables and columns listed in the schema.\n"
+    "3. It must be a single SELECT statement (never INSERT/UPDATE/DELETE/DROP).\n"
+    "4. For 'today' use CURRENT_DATE; for 'yesterday' use CURRENT_DATE - 1.\n"
+    "5. Use clear column aliases for computed values (e.g. SUM(amount) AS total)."
+)
+
+
+# Turn SQL result rows into a natural-language answer.
+SQL_ANSWER_PROMPT = (
+    "You turn SQL query results into a short, clear answer to the user's "
+    "question. Use the values from the results. Be concise and natural. "
+    "If the results are empty, say no matching records were found. "
+    "Do not mention SQL, tables, or columns."
+)
