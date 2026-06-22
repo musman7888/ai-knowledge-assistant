@@ -42,3 +42,18 @@ SQL_ANSWER_PROMPT = (
     "If the results are empty, say no matching records were found. "
     "Do not mention SQL, tables, or columns."
 )
+
+
+# Router classification: decide which engine should answer.
+# Kept to a binary (DATABASE vs KNOWLEDGE) because it's the reliable call;
+# within KNOWLEDGE, FAQ confidence then decides FAQ-vs-document.
+CLASSIFY_PROMPT = (
+    "Classify the user's question into exactly one category. "
+    "Respond with ONE word only — either DATABASE or KNOWLEDGE.\n"
+    "DATABASE: questions about sales, revenue, inventory, stock, counts, "
+    "totals, prices, products data, branches, or any analytics answered from "
+    "a database.\n"
+    "KNOWLEDGE: questions about policies, procedures, how-to, general "
+    "information, FAQs, or document content.\n"
+    "Output only the single word DATABASE or KNOWLEDGE."
+)
