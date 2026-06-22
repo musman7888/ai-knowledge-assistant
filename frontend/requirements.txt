@@ -1,0 +1,7 @@
+# ============================================================
+# Frontend dependencies (Streamlit UI)
+# Install:  pip install -r requirements.txt
+# ============================================================
+
+streamlit       # chat UI
+requests        # call the FastAPI backend

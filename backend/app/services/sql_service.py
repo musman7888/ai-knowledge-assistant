@@ -6,8 +6,10 @@
 # ============================================================
 
 import re
+import time
 
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import OperationalError
 
 from app.config import settings
 from app.prompts.system import SQL_ANSWER_PROMPT, SQL_GEN_PROMPT
@@ -16,6 +18,21 @@ from app.services.llm_service import complete
 # One shared engine (connection pool). pool_pre_ping checks a connection is
 # alive before using it — important for Neon, which suspends when idle.
 _engine = create_engine(settings.database_url, pool_pre_ping=True)
+
+
+def _connect(retries: int = 3, delay: float = 2.0):
+    """
+    Open a DB connection, retrying on OperationalError. Neon scales to zero
+    when idle; the first connection after a suspend can fail while the
+    database is waking up, so we retry instead of erroring out.
+    """
+    for attempt in range(retries):
+        try:
+            return _engine.connect()
+        except OperationalError:
+            if attempt == retries - 1:
+                raise
+            time.sleep(delay)  # give Neon a moment to wake
 
 
 class UnsafeQueryError(Exception):
@@ -42,7 +59,7 @@ def run_query(sql: str) -> list[dict]:
     if not _is_read_only(sql):
         raise UnsafeQueryError("Only single read-only SELECT queries are allowed.")
 
-    with _engine.connect() as conn:
+    with _connect() as conn:
         result = conn.execute(text(sql))
         # row._mapping gives a dict-like {column: value} view.
         return [dict(row._mapping) for row in result]
@@ -60,7 +77,7 @@ def get_schema() -> str:
         "ORDER BY table_name, ordinal_position"
     )
     lines: dict[str, list[str]] = {}
-    with _engine.connect() as conn:
+    with _connect() as conn:
         for table, column, dtype in conn.execute(query):
             lines.setdefault(table, []).append(f"{column} ({dtype})")
     return "\n".join(f"{t}: {', '.join(cols)}" for t, cols in lines.items())

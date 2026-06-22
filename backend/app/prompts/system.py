@@ -31,7 +31,10 @@ SQL_GEN_PROMPT = (
     "2. Use only the tables and columns listed in the schema.\n"
     "3. It must be a single SELECT statement (never INSERT/UPDATE/DELETE/DROP).\n"
     "4. For 'today' use CURRENT_DATE; for 'yesterday' use CURRENT_DATE - 1.\n"
-    "5. Use clear column aliases for computed values (e.g. SUM(amount) AS total)."
+    "5. Use clear column aliases for computed values (e.g. SUM(amount) AS total).\n"
+    "6. Match text values flexibly with ILIKE and % wildcards (e.g. "
+    "category ILIKE '%electronic%'), so differences in case, plurals, or "
+    "partial words still match the stored value."
 )
 
 

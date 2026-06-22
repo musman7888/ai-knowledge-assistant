@@ -18,7 +18,10 @@ from app.services.llm_service import complete
 # directory will live on a PersistentVolumeClaim (Phase 7).
 _client = chromadb.PersistentClient(path=settings.chroma_dir)
 # A "collection" is like a table for vectors. All document chunks go here.
-_collection = _client.get_or_create_collection("documents")
+# embedding_function=None: we ALWAYS pass our own vectors (from embeddings.py),
+# so ChromaDB must not load its default ONNX embedder — that download would
+# add a slow, flaky network dependency to startup for no benefit.
+_collection = _client.get_or_create_collection("documents", embedding_function=None)
 
 # Chunking parameters (tune in the Learn by Doing task).
 CHUNK_SIZE = 500       # characters per chunk
