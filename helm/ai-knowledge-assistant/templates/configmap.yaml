@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  LLM_PROVIDER: {{ .Values.config.llmProvider | quote }}
+  LLM_MODEL: {{ .Values.config.llmModel | quote }}
+  EMBEDDINGS_PROVIDER: {{ .Values.config.embeddingsProvider | quote }}
+  EMBEDDINGS_MODEL: {{ .Values.config.embeddingsModel | quote }}
+  ENVIRONMENT: {{ .Values.config.environment | quote }}
+  CHROMA_DIR: "/app/chroma_data"
+  DATA_DIR: "/app/data"

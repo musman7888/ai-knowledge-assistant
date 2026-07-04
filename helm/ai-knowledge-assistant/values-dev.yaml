@@ -1,0 +1,13 @@
+# Dev overrides: always pull the latest image, NodePort access, debug env.
+backend:
+  image:
+    pullPolicy: Always
+
+frontend:
+  image:
+    pullPolicy: Always
+  serviceType: NodePort
+  nodePort: 30851
+
+config:
+  environment: development

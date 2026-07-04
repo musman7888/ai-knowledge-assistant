@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ai-knowledge-assistant
+description: Multi-source AI assistant — RAG + Text-to-SQL + FAQ + multi-language
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

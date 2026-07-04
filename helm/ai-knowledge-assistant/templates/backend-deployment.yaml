@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-backend
+  labels:
+    app: {{ .Release.Name }}-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-backend
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-backend
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.backend.port }}
+          # Non-secret config + secrets, both surfaced as environment variables.
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+            - secretRef:
+                name: {{ .Release.Name }}-secret
+          # Startup probe: the backend loads torch + the embedding model, which
+          # can take 1-2 min. This gives it up to ~400s before liveness kicks in,
+          # so a slow boot doesn't get mistaken for a crash.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.port }}
+            periodSeconds: 10
+            failureThreshold: 40
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.port }}
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.port }}
+            periodSeconds: 30
+          volumeMounts:
+            - name: chroma
+              mountPath: /app/chroma_data
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+      volumes:
+        - name: chroma
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-chroma

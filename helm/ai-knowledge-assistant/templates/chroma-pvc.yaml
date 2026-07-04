@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-chroma
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.chroma.size }}
+  {{- if .Values.persistence.chroma.storageClass }}
+  storageClassName: {{ .Values.persistence.chroma.storageClass }}
+  {{- end }}

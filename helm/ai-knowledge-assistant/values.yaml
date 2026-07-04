@@ -1,0 +1,54 @@
+# Default values for ai-knowledge-assistant.
+# Secrets are intentionally empty here — provide them at deploy time via
+# `helm --set secrets.geminiApiKey=... secrets.databaseUrl=...` (from CI secrets).
+
+backend:
+  image:
+    repository: ghcr.io/musman7888/ai-knowledge-assistant-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 8000
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 2Gi
+
+frontend:
+  image:
+    repository: ghcr.io/musman7888/ai-knowledge-assistant-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 8501
+  serviceType: NodePort
+  nodePort: 30851
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+# Non-secret configuration (rendered into a ConfigMap → env vars).
+config:
+  llmProvider: gemini
+  llmModel: gemini/gemini-3.1-flash-lite-preview
+  embeddingsProvider: local
+  embeddingsModel: all-MiniLM-L6-v2
+  environment: production
+
+# Secrets (rendered into a Secret → env vars). Keep empty in git.
+secrets:
+  geminiApiKey: ""
+  databaseUrl: ""
+  apiSecretKey: "change-me"
+
+# ChromaDB persistence (the one stateful piece; Neon holds the SQL DB).
+persistence:
+  chroma:
+    size: 1Gi
+    storageClass: ""   # "" = cluster default (K3s local-path)
+
+# Name of a pre-created secret for pulling private GHCR images, e.g. ghcr-login.
+imagePullSecrets: []
