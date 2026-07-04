@@ -1,0 +1,29 @@
+# Keep build context small and secrets out of images.
+# (Relative to the repo root, which is the build context.)
+
+# Virtual environments (huge, host-specific)
+**/venv/
+**/.venv/
+
+# Python caches
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+
+# Secrets — never bake into an image
+**/.env
+*.env
+!**/.env.example
+
+# Generated vector store (rebuilt from PDFs; a PVC holds it in K3s)
+**/chroma_data/
+
+# Local working docs (also gitignored)
+CONSTITUTION.md
+TRACKER.md
+
+# Git + OS noise
+.git/
+.github/
+**/.DS_Store
+**/Thumbs.db

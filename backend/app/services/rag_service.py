@@ -86,7 +86,7 @@ def count() -> int:
 
 
 # Path to the demo document, used to seed a fresh deployment.
-_SAMPLE_PDF = Path(__file__).resolve().parents[3] / "data" / "sample.pdf"
+_SAMPLE_PDF = Path(settings.data_dir) / "sample.pdf"
 
 
 def seed_sample_if_empty() -> None:

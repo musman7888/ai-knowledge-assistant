@@ -5,7 +5,13 @@
 # os.environ directly — it just imports `settings`.
 # ============================================================
 
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Default data directory: <repo>/data locally. In the container the layout
+# differs, so the Dockerfile overrides this with DATA_DIR=/app/data.
+_DEFAULT_DATA_DIR = str(Path(__file__).resolve().parents[2] / "data")
 
 
 class Settings(BaseSettings):
@@ -28,6 +34,9 @@ class Settings(BaseSettings):
 
     # --- Vector store (ChromaDB) ---
     chroma_dir: str = "./chroma_data"
+
+    # --- Data files (faqs.json, sample.pdf) ---
+    data_dir: str = _DEFAULT_DATA_DIR
 
     # --- Database (PostgreSQL, for Text-to-SQL) ---
     database_url: str = "postgresql://user:pass@localhost:5432/knowledge_db"

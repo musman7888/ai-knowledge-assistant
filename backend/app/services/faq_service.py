@@ -8,11 +8,12 @@
 import json
 from pathlib import Path
 
+from app.config import settings
 from app.services.embeddings import embed
 
-# Path to data/faqs.json. This file lives at backend/app/services/, so
-# parents[3] climbs services -> app -> backend -> project root.
-FAQ_PATH = Path(__file__).resolve().parents[3] / "data" / "faqs.json"
+# Path to faqs.json — via settings.data_dir so it works both locally and in
+# the container (where the Dockerfile sets DATA_DIR=/app/data).
+FAQ_PATH = Path(settings.data_dir) / "faqs.json"
 
 # Minimum similarity (0..1) for a match to count. Starting suggestion;
 # tune in the Learn by Doing task below.
