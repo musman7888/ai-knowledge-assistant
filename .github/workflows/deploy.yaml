@@ -1,0 +1,125 @@
+# ============================================================
+# Deploy — build images, push to GHCR, deploy to K3s on the VPS.
+# Triggers on push to main (or manual). Mirrors Project 1's pipeline.
+#
+# Required GitHub Secrets:
+#   VPS_HOST, VPS_USER, VPS_SSH_KEY  — SSH into the Contabo VPS
+#   GH_PAT                           — classic PAT (repo + read:packages),
+#                                      so the VPS can pull private GHCR images
+#   GEMINI_API_KEY                   — Gemini key
+#   DATABASE_URL                     — Neon connection string
+# ============================================================
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  BACKEND_IMAGE: ghcr.io/musman7888/ai-knowledge-assistant-backend
+  FRONTEND_IMAGE: ghcr.io/musman7888/ai-knowledge-assistant-frontend
+
+jobs:
+  build-backend:
+    name: Build & push backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build & push (context = repo root)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.BACKEND_IMAGE }}:latest
+            ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-frontend:
+    name: Build & push frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build & push (context = repo root)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.FRONTEND_IMAGE }}:latest
+            ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to K3s
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend]
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          command_timeout: 15m
+          script: |
+            set -e
+            export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+            cd ~/ai-knowledge-assistant
+
+            # Pull latest chart/code (private repo via PAT)
+            git remote set-url origin https://${{ secrets.GH_PAT }}@github.com/musman7888/ai-knowledge-assistant.git
+            git pull origin main
+
+            # Namespace
+            kubectl create namespace ai-knowledge --dry-run=client -o yaml | kubectl apply -f -
+
+            # GHCR pull secret (GH_PAT persists, unlike GITHUB_TOKEN)
+            kubectl create secret docker-registry ghcr-secret \
+              --docker-server=ghcr.io \
+              --docker-username=musman7888 \
+              --docker-password=${{ secrets.GH_PAT }} \
+              --namespace=ai-knowledge \
+              --dry-run=client -o yaml | kubectl apply -f -
+
+            # Deploy (image tag = commit SHA so pods roll to the new image)
+            helm upgrade --install ai-knowledge ./helm/ai-knowledge-assistant \
+              --namespace ai-knowledge \
+              -f ./helm/ai-knowledge-assistant/values-dev.yaml \
+              --set backend.image.tag=${{ github.sha }} \
+              --set frontend.image.tag=${{ github.sha }} \
+              --set-string secrets.geminiApiKey='${{ secrets.GEMINI_API_KEY }}' \
+              --set-string secrets.databaseUrl='${{ secrets.DATABASE_URL }}' \
+              --set imagePullSecrets[0].name=ghcr-secret \
+              --wait --timeout 12m
+
+            kubectl get pods -n ai-knowledge
+            kubectl get svc -n ai-knowledge
+
+      - name: Summary
+        run: |
+          echo "## Deployed :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "Frontend: http://${{ secrets.VPS_HOST }}:30851" >> $GITHUB_STEP_SUMMARY

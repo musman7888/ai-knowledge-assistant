@@ -1,0 +1,35 @@
+# ============================================================
+# CI — fast checks on pull requests and non-main pushes.
+# Compiles the backend and lints the Helm chart. (Full image
+# build + deploy happens in deploy.yaml on push to main.)
+# ============================================================
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  checks:
+    name: Lint & compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Byte-compile backend (syntax check)
+        run: python -m compileall backend/app
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Helm lint
+        run: |
+          helm lint helm/ai-knowledge-assistant \
+            --set secrets.geminiApiKey=x --set secrets.databaseUrl=y

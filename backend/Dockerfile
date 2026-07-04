@@ -15,6 +15,10 @@ RUN pip install --no-cache-dir --timeout 120 --retries 10 \
         torch --index-url https://download.pytorch.org/whl/cpu \
  && pip install --no-cache-dir --timeout 120 --retries 10 -r requirements.txt
 
+# Bake the embedding model into the image so the container never downloads
+# it at runtime (no network dependency / flaky-download risk at startup).
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
 # Application code and bundled data (faqs.json, sample.pdf).
 COPY backend/app ./app
 COPY data ./data
