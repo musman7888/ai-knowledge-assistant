@@ -94,11 +94,15 @@ Every answer shows its **source** (FAQ / Document / Database) and, for database 
 
 ## Screenshots
 
-> _Add screenshots/GIF here — e.g. `docs/images/demo.gif`_
+**One chat box, the right engine for each question** — note the source badge on every answer (Database / FAQ / Document):
 
-| Multi-source answers | Text-to-SQL with query shown |
-|----------------------|------------------------------|
-| _screenshot_ | _screenshot_ |
+<p align="center">
+  <img src="docs/images/demo-multisource.png" alt="Multi-source answers with source badges" width="820">
+</p>
+
+| Text-to-SQL — shows the generated query | Multi-language — ask in Spanish, answer in Spanish |
+|:---:|:---:|
+| <img src="docs/images/demo-sql.png" alt="Text-to-SQL with query" width="410"> | <img src="docs/images/demo-multilang.png" alt="Spanish question and answer" width="410"> |
 
 ---
 
