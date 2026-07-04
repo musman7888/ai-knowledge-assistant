@@ -5,6 +5,8 @@
 # Retrieval + answering is added in Phase 3b.
 # ============================================================
 
+from pathlib import Path
+
 import chromadb
 import pypdf
 
@@ -81,6 +83,24 @@ def ingest(doc_id: str, text: str) -> int:
 def count() -> int:
     """Total number of chunks currently stored (for testing/debugging)."""
     return _collection.count()
+
+
+# Path to the demo document, used to seed a fresh deployment.
+_SAMPLE_PDF = Path(__file__).resolve().parents[3] / "data" / "sample.pdf"
+
+
+def seed_sample_if_empty() -> None:
+    """
+    Ingest the bundled sample.pdf if the vector store is empty. On a fresh
+    deployment ChromaDB starts empty, so this makes RAG questions work
+    immediately (instead of failing until someone uploads a document).
+    """
+    try:
+        if _collection.count() == 0 and _SAMPLE_PDF.exists():
+            ingest(doc_id="sample.pdf", text=extract_text(str(_SAMPLE_PDF)))
+            print(f"[rag_service] seeded sample.pdf ({_collection.count()} chunks)")
+    except Exception as error:  # never block startup on seeding
+        print(f"[rag_service] seed skipped: {type(error).__name__}: {error}")
 
 
 # ============================================================

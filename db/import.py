@@ -48,6 +48,15 @@ def main() -> None:
                     f,
                 )
 
+        # 2b) Shift sample sales dates so the most recent lands on "yesterday".
+        # The CSV uses fixed dates; this keeps time-based demo questions
+        # (e.g. "sales yesterday") returning data whenever the import is run.
+        print("Shifting sales dates relative to today ...")
+        cur.execute(
+            "UPDATE sales SET sale_date = sale_date + "
+            "((CURRENT_DATE - 1) - (SELECT MAX(sale_date) FROM sales))"
+        )
+
         conn.commit()
 
         # 3) Report row counts so we can see it worked.
