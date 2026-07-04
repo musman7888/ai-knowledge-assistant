@@ -9,7 +9,7 @@
 # what lets this router treat them interchangeably.
 # ============================================================
 
-from app.prompts.system import CLASSIFY_PROMPT
+from app.prompts.system import CLASSIFY_PROMPT, CONDENSE_PROMPT
 from app.services import faq_service, rag_service, sql_service, translate
 from app.services.llm_service import complete
 
@@ -21,8 +21,24 @@ def classify(question: str) -> str:
     return "DATABASE" if "DATABASE" in reply else "KNOWLEDGE"
 
 
-def route(question: str) -> dict:
+def _condense(question: str, history: list[dict]) -> str:
+    """
+    Rewrite a follow-up into a standalone question using recent history.
+    No history -> return the question unchanged (single-turn behavior).
+    """
+    if not history:
+        return question
+    # A short transcript of the last few turns for context.
+    transcript = "\n".join(f"{turn['role']}: {turn['content']}" for turn in history[-6:])
+    prompt = f"Conversation so far:\n{transcript}\n\nFollow-up question: {question}"
+    return complete(prompt, system=CONDENSE_PROMPT).strip()
+
+
+def route(question: str, history: list[dict] | None = None) -> dict:
     """Answer a question, in the user's own language, using the right engine."""
+    # 0) Make follow-ups self-contained using the conversation history.
+    question = _condense(question, history or [])
+
     # 1) Normalize to English (and remember the original language).
     english_q, language = translate.to_english(question)
 

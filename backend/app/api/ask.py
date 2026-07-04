@@ -13,10 +13,17 @@ from app.services.router import route
 router = APIRouter()
 
 
+class Turn(BaseModel):
+    """One past message in the conversation."""
+    role: str        # "user" | "assistant"
+    content: str
+
+
 class AskRequest(BaseModel):
     """Incoming question. Language is auto-detected by the router."""
     question: str
     language: str = "auto"
+    history: list[Turn] = []   # recent turns, for follow-up context
 
 
 class AskResponse(BaseModel):
@@ -31,7 +38,8 @@ class AskResponse(BaseModel):
 @router.post("/ask", response_model=AskResponse)
 def ask(request: AskRequest) -> AskResponse:
     """Answer a question via the smart router (FAQ / RAG / SQL + multi-language)."""
-    result = route(request.question)
+    history = [turn.model_dump() for turn in request.history]
+    result = route(request.question, history=history)
     return AskResponse(
         answer=result["answer"],
         source=result.get("source", "fallback"),

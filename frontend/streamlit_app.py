@@ -106,6 +106,11 @@ for msg in st.session_state.history:
 # --- New question ---
 question = st.chat_input("Ask a question...")
 if question:
+    # Capture the prior turns BEFORE adding this one, for follow-up context.
+    prior = [
+        {"role": m["role"], "content": m["content"]}
+        for m in st.session_state.history[-6:]
+    ]
     st.session_state.history.append({"role": "user", "content": question})
     with st.chat_message("user"):
         st.markdown(question)
@@ -115,7 +120,7 @@ if question:
             try:
                 resp = requests.post(
                     f"{BACKEND_URL}/ask",
-                    json={"question": question},
+                    json={"question": question, "history": prior},
                     timeout=120,
                 )
                 data = resp.json()

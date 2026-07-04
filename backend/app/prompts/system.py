@@ -60,3 +60,17 @@ CLASSIFY_PROMPT = (
     "information, FAQs, or document content.\n"
     "Output only the single word DATABASE or KNOWLEDGE."
 )
+
+
+# Conversational memory: rewrite a follow-up into a standalone question.
+# This is what makes the otherwise-stateless engines feel conversational —
+# the fragment "and what about onsite store?" becomes a full question using
+# the prior turns, so retrieval/SQL get something self-contained.
+CONDENSE_PROMPT = (
+    "Given the conversation so far and a follow-up question, rewrite the "
+    "follow-up as a complete, standalone question that can be understood on "
+    "its own, filling in any context from the conversation. "
+    "If the follow-up is already standalone, return it unchanged. "
+    "Keep it in the same language as the follow-up. "
+    "Output only the rewritten question, nothing else."
+)
