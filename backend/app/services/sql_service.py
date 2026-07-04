@@ -5,7 +5,6 @@
 # is the safety wall: even a bad generated query can only ever SELECT.
 # ============================================================
 
-import re
 import time
 
 from sqlalchemy import create_engine, text
@@ -14,6 +13,7 @@ from sqlalchemy.exc import OperationalError
 from app.config import settings
 from app.prompts.system import SQL_ANSWER_PROMPT, SQL_GEN_PROMPT
 from app.services.llm_service import complete
+from app.utils.sql_safety import clean_sql, is_read_only
 
 # One shared engine (connection pool). pool_pre_ping checks a connection is
 # alive before using it — important for Neon, which suspends when idle.
@@ -39,24 +39,13 @@ class UnsafeQueryError(Exception):
     """Raised when a query is not a read-only SELECT."""
 
 
-def _is_read_only(sql: str) -> bool:
-    """
-    Allow only a single SELECT statement.
-    Blocks writes (INSERT/UPDATE/DELETE), DDL (DROP/ALTER), and stacked
-    statements (a second statement after a ';').
-    """
-    cleaned = sql.strip().rstrip(";").strip()
-    if ";" in cleaned:                       # no stacked statements
-        return False
-    return cleaned.lower().startswith("select")
-
-
 def run_query(sql: str) -> list[dict]:
     """
     Execute a read-only SELECT and return rows as a list of dicts.
     Raises UnsafeQueryError if the SQL is anything other than a SELECT.
+    (is_read_only lives in app.utils.sql_safety — pure + unit-tested.)
     """
-    if not _is_read_only(sql):
+    if not is_read_only(sql):
         raise UnsafeQueryError("Only single read-only SELECT queries are allowed.")
 
     with _connect() as conn:
@@ -85,14 +74,8 @@ def get_schema() -> str:
 
 # ============================================================
 # Text-to-SQL (Phase 4b): question -> SQL -> rows -> answer
+# (clean_sql lives in app.utils.sql_safety — pure + unit-tested.)
 # ============================================================
-
-def _clean_sql(raw: str) -> str:
-    """Strip markdown fences / stray prose so we're left with just the SQL."""
-    fenced = re.search(r"```(?:sql)?\s*(.*?)```", raw, re.DOTALL | re.IGNORECASE)
-    sql = fenced.group(1) if fenced else raw
-    return sql.strip().rstrip(";").strip()
-
 
 def answer(question: str) -> dict | None:
     """
@@ -106,7 +89,7 @@ def answer(question: str) -> dict | None:
 
     # 1) Ask the LLM to translate the question into SQL.
     gen_prompt = f"Database schema:\n{schema}\n\nQuestion: {question}"
-    sql = _clean_sql(complete(gen_prompt, system=SQL_GEN_PROMPT))
+    sql = clean_sql(complete(gen_prompt, system=SQL_GEN_PROMPT))
 
     # 2) Execute it through the read-only guard.
     try:

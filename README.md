@@ -3,6 +3,7 @@
 > Ask your documents and databases anything — in any language. One chat box, four AI engines, honest answers.
 
 <p>
+  <img src="https://github.com/musman7888/ai-knowledge-assistant/actions/workflows/ci.yaml/badge.svg" alt="CI" />
   <img src="https://img.shields.io/badge/python-3.11-blue" />
   <img src="https://img.shields.io/badge/FastAPI-async-009688" />
   <img src="https://img.shields.io/badge/Streamlit-UI-FF4B4B" />

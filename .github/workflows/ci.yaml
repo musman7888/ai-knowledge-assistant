@@ -6,10 +6,8 @@
 name: CI
 
 on:
-  pull_request:
   push:
-    branches-ignore:
-      - main
+  pull_request:
 
 jobs:
   checks:
@@ -25,6 +23,11 @@ jobs:
 
       - name: Byte-compile backend (syntax check)
         run: python -m compileall backend/app
+
+      - name: Run unit tests (pure logic — no heavy deps)
+        run: |
+          pip install pytest
+          cd backend && python -m pytest -q
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
