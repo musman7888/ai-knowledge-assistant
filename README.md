@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/banner.png" alt="AI Knowledge Assistant" width="840">
+</p>
+
 # 🧠 AI Knowledge Assistant (RAG + SQL)
 
 > Ask your documents and databases anything — in any language. One chat box, four AI engines, honest answers.

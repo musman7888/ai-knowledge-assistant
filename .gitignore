@@ -32,6 +32,8 @@ uploads/
 # --- Internal working docs (local only, like Project 1) ---
 CONSTITUTION.md
 TRACKER.md
+PROJECT_BRIEF.md
+K8S_PROJECT_BRIEF.md
 
 # --- OS / editor noise ---
 .DS_Store

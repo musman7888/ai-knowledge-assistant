@@ -1,0 +1,20 @@
+<svg viewBox="0 0 680 340" width="1280" height="640" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="680" height="340" rx="16" fill="#0E1B2E"/>
+  <rect x="0" y="0" width="6" height="340" fill="#4A9DE8"/>
+  <circle cx="70" cy="70" r="18" fill="#16283C" stroke="#2A4056" stroke-width="1"/>
+  <circle cx="70" cy="70" r="7" fill="#4A9DE8"/>
+  <circle cx="600" cy="52" r="5" fill="#63C57F"/>
+  <text x="612" y="57" fill="#63C57F" font-family="Arial, sans-serif" font-size="14" font-weight="600">LIVE</text>
+  <text x="48" y="150" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="38" font-weight="600">AI Knowledge Assistant</text>
+  <text x="48" y="184" fill="#9FB3C8" font-family="Arial, sans-serif" font-size="17">Ask your documents &amp; databases anything — in any language.</text>
+  <rect x="48" y="212" width="92" height="32" rx="16" fill="#16283C" stroke="#2A4056"/>
+  <circle cx="66" cy="228" r="5" fill="#63C57F"/>
+  <text x="78" y="233" fill="#CFE0F0" font-family="Arial, sans-serif" font-size="14" font-weight="500">FAQ</text>
+  <rect x="150" y="212" width="168" height="32" rx="16" fill="#16283C" stroke="#2A4056"/>
+  <circle cx="168" cy="228" r="5" fill="#4A9DE8"/>
+  <text x="180" y="233" fill="#CFE0F0" font-family="Arial, sans-serif" font-size="14" font-weight="500">Document (RAG)</text>
+  <rect x="328" y="212" width="150" height="32" rx="16" fill="#16283C" stroke="#2A4056"/>
+  <circle cx="346" cy="228" r="5" fill="#E8944A"/>
+  <text x="358" y="233" fill="#CFE0F0" font-family="Arial, sans-serif" font-size="14" font-weight="500">Text-to-SQL</text>
+  <text x="48" y="300" fill="#5B7288" font-family="Arial, sans-serif" font-size="14">FastAPI · ChromaDB · PostgreSQL · Kubernetes (K3s) · GitHub Actions CI/CD</text>
+</svg>
