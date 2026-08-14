@@ -15,4 +15,4 @@ config:
 # Public domain (HTTPS via cert-manager + Let's Encrypt). NodePort stays too.
 ingress:
   enabled: true
-  host: ai.usman7888.com
+  host: rag.usman7888.com
