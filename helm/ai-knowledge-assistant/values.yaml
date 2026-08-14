@@ -50,5 +50,13 @@ persistence:
     size: 1Gi
     storageClass: ""   # "" = cluster default (K3s local-path)
 
+# Ingress + TLS (adds https://<host>; the NodePort still serves the IP:port link).
+ingress:
+  enabled: false
+  className: traefik            # K3s ships with Traefik
+  host: ""                      # e.g. ai.usman7888.com
+  clusterIssuer: letsencrypt-prod
+  tlsSecretName: ai-knowledge-tls
+
 # Name of a pre-created secret for pulling private GHCR images, e.g. ghcr-login.
 imagePullSecrets: []
