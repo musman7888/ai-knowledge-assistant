@@ -19,9 +19,9 @@
 
 ## ▶️ Live demo
 
-**http://37.60.225.152:30851**
+### 🔒 **https://rag.usman7888.com**
 
-_(Deployed 24/7 on a K3s cluster. The first database question may take a second — the managed database wakes from idle.)_
+_(Deployed 24/7 on a K3s cluster, HTTPS via Traefik Ingress + cert-manager + Let's Encrypt. Also reachable at http://37.60.225.152:30851. The first database question may take a second — the managed database wakes from idle.)_
 
 Try asking:
 - *"Which products are out of stock?"* → answered from a **database** (Text-to-SQL)
@@ -93,6 +93,7 @@ Every answer shows its **source** (FAQ / Document / Database) and, for database 
 | **Database** | PostgreSQL (Neon, managed) |
 | **Containers** | Docker (CPU-only torch), GHCR |
 | **Orchestration** | K3s + Helm (ChromaDB on a PVC, readiness probes) |
+| **HTTPS / domain** | Traefik Ingress + cert-manager + Let's Encrypt (auto-renewing TLS) |
 | **CI/CD** | GitHub Actions → build → GHCR → SSH → `helm upgrade` |
 
 ---
