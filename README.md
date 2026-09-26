@@ -21,7 +21,7 @@
 
 ### 🔒 **https://rag.usman7888.com**
 
-_(Deployed 24/7 on a K3s cluster, HTTPS via Traefik Ingress + cert-manager + Let's Encrypt. Also reachable at http://37.60.225.152:30851. The first database question may take a second — the managed database wakes from idle.)_
+_(Deployed 24/7 on a K3s cluster, HTTPS via Traefik Ingress + cert-manager + Let's Encrypt. Also reachable at https://rag.usman7888.com/. The first database question may take a second — the managed database wakes from idle.)_
 
 Try asking:
 - *"Which products are out of stock?"* → answered from a **database** (Text-to-SQL)
